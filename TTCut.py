@@ -13,7 +13,9 @@ def select_files():
 
 def process_file(file_path):
     input_path = os.path.abspath(file_path)
-    output_path = os.path.splitext(input_path)[0] + "-output.mp4"
+    output_dir = os.path.join(os.path.dirname(input_path), "Converted")
+    os.makedirs(output_dir, exist_ok=True)
+    output_path = os.path.join(output_dir, os.path.splitext(os.path.basename(input_path))[0] + "-output.mp4")
     duration = get_video_duration(input_path)
     command = f"ffmpeg -hide_banner -y -i {input_path} -vcodec h264_nvenc -ss 0 -to {duration-4.1} -copyts {output_path}"
     subprocess.call(command, shell=True)
