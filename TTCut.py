@@ -4,10 +4,12 @@ from tkinter import filedialog
 from tkinter import messagebox
 import subprocess
 
-def select_file():
-    file_path = filedialog.askopenfilename(filetypes=[("MP4 files", "*.mp4")])
-    if file_path:
-        process_file(file_path)
+def select_files():
+    file_paths = filedialog.askopenfilenames(filetypes=[("MP4 files", "*.mp4")])
+    if file_paths:
+        for file_path in file_paths:
+            process_file(file_path)
+        tk.messagebox.showinfo(title="Video Processing", message="All files processed.")
 
 def process_file(file_path):
     input_path = os.path.abspath(file_path)
@@ -15,7 +17,6 @@ def process_file(file_path):
     duration = get_video_duration(input_path)
     command = f"ffmpeg -hide_banner -y -i {input_path} -vcodec h264_nvenc -ss 0 -to {duration-4.1} -copyts {output_path}"
     subprocess.call(command, shell=True)
-    tk.messagebox.showinfo(title="Video Processing", message="Processing complete!")
 
 def get_video_duration(file_path):
     command = f"ffprobe -i {file_path} -show_entries format=duration -v quiet -of csv=\"p=0\""
@@ -26,8 +27,8 @@ root = tk.Tk()
 root.eval('tk::PlaceWindow . center')
 root.title("TikTok Cutter")
 root.geometry("200x100")
-label = tk.Label(root, text="Select a TikTok MP4 file:")
+label = tk.Label(root, text="Select TikTok MP4 files:")
 label.pack(pady=10)
-button = tk.Button(root, text="Browse", command=select_file)
+button = tk.Button(root, text="Browse", command=select_files)
 button.pack(pady=10)
 root.mainloop()
